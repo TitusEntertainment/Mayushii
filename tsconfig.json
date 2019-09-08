@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "noImplicitAny": false,
+    "module": "commonjs",
+    "target": "es2017",
+    "lib": ["es7"],
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "removeComments": false,
+    "types": ["node"],
+    "experimentalDecorators": true,
+    "declaration": false,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*", "src/**/*.json"]
+}
