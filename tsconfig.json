@@ -7,6 +7,7 @@
     "lib": ["es7"],
     "moduleResolution": "node",
     "baseUrl": ".",
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "sourceMap": false,
     "removeComments": false,

@@ -7,6 +7,8 @@ declare module 'discord-akairo' {
     commandHandler: CommandHandler;
     config: MayushiiOptions;
     listenerHandler: ListenerHandler;
+    api_url: string;
+    color: string;
   }
 }
 
