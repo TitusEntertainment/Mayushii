@@ -1,6 +1,9 @@
 import { AkairoClient, CommandHandler, ListenerHandler } from 'discord-akairo';
 import { join } from 'path';
 import { Message, MessageEmbed, Channel, ShardingManager } from 'discord.js';
+import { Connection, createConnection } from 'typeorm';
+import { getMongoRepository } from 'typeorm';
+import { GuildModel } from '../db/models/Guild.Model';
 
 declare module 'discord-akairo' {
   interface AkairoClient {
@@ -9,6 +12,7 @@ declare module 'discord-akairo' {
     listenerHandler: ListenerHandler;
     api_url: string;
     color: string;
+    db: Connection;
   }
 }
 
@@ -18,9 +22,17 @@ interface MayushiiOptions {
 }
 
 export default class MayushiiClient extends AkairoClient {
+  public db: Connection;
+
+  public GuildRepo = getMongoRepository(GuildModel);
+
   public commandHandler = new CommandHandler(this, {
     directory: join(__dirname, '..', 'commands'),
-    prefix: '!',
+    prefix: async (message: Message): Promise<string> => {
+      const data = await this.GuildRepo.findOne({ guildId: message.guild.id });
+      if (!data) return '!';
+      return data.prefix;
+    },
     aliasReplacement: /-/g,
     allowMention: true,
     handleEdits: true,
