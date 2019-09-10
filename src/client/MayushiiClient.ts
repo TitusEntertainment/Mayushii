@@ -2,7 +2,7 @@ import { AkairoClient, CommandHandler, ListenerHandler } from 'discord-akairo';
 import { join } from 'path';
 import { Message, MessageEmbed, Channel, ShardingManager } from 'discord.js';
 import { Connection, createConnection } from 'typeorm';
-import { getMongoRepository } from 'typeorm';
+import { getMongoRepository, getMongoManager } from 'typeorm';
 import { GuildModel } from '../db/models/Guild.Model';
 
 declare module 'discord-akairo' {
@@ -24,12 +24,12 @@ interface MayushiiOptions {
 export default class MayushiiClient extends AkairoClient {
   public db: Connection;
 
-  public GuildRepo = getMongoRepository(GuildModel);
+  public manager = getMongoManager();
 
   public commandHandler = new CommandHandler(this, {
     directory: join(__dirname, '..', 'commands'),
     prefix: async (message: Message): Promise<string> => {
-      const data = await this.GuildRepo.findOne({ guildId: message.guild.id });
+      const data = await this.manager.findOne(GuildModel, { guildId: message.guild.id });
       if (!data) return '!';
       return data.prefix;
     },

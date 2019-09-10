@@ -8,11 +8,4 @@ export class GuildModel extends BaseEntity {
 
   @Column()
   prefix!: string;
-
-  static findByGuildId(guild: Guild) {
-    const id = guild.id;
-    return this.createQueryBuilder('Guild')
-      .where('guild.guildId = :guildId', { id })
-      .getMany();
-  }
 }
