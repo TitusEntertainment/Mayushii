@@ -5,3 +5,4 @@ import 'reflect-metadata';
 
 const client = new MayushiiClient({ owner: process.env.OWNER, token: process.env.TOKEN });
 client.start();
+// Hello word

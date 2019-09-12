@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@ayana/logger@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@ayana/logger/-/logger-2.1.1.tgz#b529ebf55e0bacc851fd01caf3de0361f4ed8cef"
+  integrity sha512-xRGwZpPJPM+2gG1U8b3LclfuUl1pGqPh+H2cHw5aaZ/7edfRXFj60Sr8vItNw+ZIis1OX2wUlxVmnVZn7o7jXQ==
+  dependencies:
+    fecha "^3.0.3"
+
 "@types/ms@^0.7.31":
   version "0.7.31"
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-0.7.31.tgz#31b7ca6407128a3d2bbc27fe2d21b345397f6197"
@@ -787,6 +794,11 @@ fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
   integrity sha1-1RQsDK7msRifh9OnYREGT4bIu/I=
+
+fecha@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/fecha/-/fecha-3.0.3.tgz#fabbd416497649a42c24d34bfa726b579203a1e2"
+  integrity sha512-6LQK/1jud/FZnfEEZJ7y81vw7ge81DNd/XEsX0hgMUjhS+QMljkb1C0czBaP7dMNRVrd5mw/J2J7qI2Nw+TWZw==
 
 fetch-cookie@^0.7.3:
   version "0.7.3"

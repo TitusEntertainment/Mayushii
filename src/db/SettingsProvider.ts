@@ -1,3 +1,8 @@
+/***
+ * I was to lazy to write this and since I'm using the same db I took Yukikazes code for this. https://github.com/Naval-Base/yukikaze/tree/master/src/bot/structures
+ */
+
+
 import { Provider } from 'discord-akairo';
 import { Guild } from 'discord.js';
 import { Repository } from 'typeorm';

@@ -8,27 +8,34 @@ export default class PrefixCommand extends Command {
   public constructor() {
     super('setting-prefix', {
       aliases: ['prefix'],
-      userPermissions: ['MANAGE_CHANNELS'],
+      userPermissions: ['MANAGE_GUILD'],
+      channel: 'guild',
+      ratelimit: 2,
+      description: {
+        content: 'Displays or changes the prefix for this guild',
+        usage: '[prefix]',
+        examples: ['.', 'm/'],
+      },
       args: [
         {
-          id: 'newPrefix',
+          id: 'prefix',
           type: 'string',
         },
       ],
     });
   }
 
-  public async exec(message: Message, { newPrefix }) {
-    if (!newPrefix)
+  public async exec(message: Message, { prefix }: { prefix:string}) {
+    if (!prefix)
       return message.util!.send(
         //@ts-ignore
         `The current prefix for this guild is: \`${await this.handler.prefix(message)}\``
       );
 
-    this.client.settings.set(message.guild!, 'prefix', newPrefix);
-    if (newPrefix === '!') {
-      return message.util!.reply(`the prefix has been reset to \`${newPrefix}\``);
+    this.client.settings.set(message.guild!, 'prefix', prefix);
+    if (prefix === '!') {
+      return message.util!.reply(`the prefix has been reset to \`${prefix}\``);
     }
-    return message.util!.reply(`the prefix has been set to \`${newPrefix}\``);
+    return message.util!.reply(`the prefix has been set to \`${prefix}\``);
   }
 }

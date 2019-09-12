@@ -6,6 +6,7 @@ import { getMongoRepository, getMongoManager } from 'typeorm';
 import sqlite from 'sqlite';
 import { Setting } from '../db/models/Settings';
 import TypeORMProvider from '../db/SettingsProvider';
+import Logger from '@ayana/logger';
 
 declare module 'discord-akairo' {
   interface AkairoClient {
@@ -16,6 +17,7 @@ declare module 'discord-akairo' {
     color: string;
     db: Connection;
     settings: TypeORMProvider;
+    logger: Logger;
   }
 }
 
@@ -27,6 +29,7 @@ interface MayushiiOptions {
 export default class MayushiiClient extends AkairoClient {
   public db!: Connection;
   public settings!: TypeORMProvider;
+  public logger = Logger.get('MayushiiClient');
 
   public commandHandler = new CommandHandler(this, {
     directory: join(__dirname, '..', 'commands'),
@@ -77,26 +80,26 @@ export default class MayushiiClient extends AkairoClient {
       commandHandler: this.commandHandler,
       listenerHandler: this.listenerHandler,
     });
-    this.commandHandler.loadAll();
-    console.log('Command handler loaded');
-    this.listenerHandler.loadAll();
-    console.log('Listener handler loaded');
-    const isProd = process.env.NODE_ENV === 'production';
+    await this.commandHandler.loadAll();
+    this.logger.info('Command handler loaded');
+    await this.listenerHandler.loadAll();
+    this.logger.info('Listener handler loaded');
     this.db = await createConnection({
       type: 'postgres',
       database: 'Mayushii',
       host: 'localhost',
       port: 5432,
       name: 'Mayushii',
-      synchronize: !isProd,
-      logging: !isProd,
+      synchronize: true,
+      logging: ['warn', 'error', 'info'],
       entities: [Setting],
     });
-    console.log('Connected to db');
+    this.logger.info('Connected to db');
     // @ts-ignore
     this.settings = new TypeORMProvider(this.db.getRepository(Setting));
     await this.settings.init();
-    console.log('Inited guild settings');
+    this.logger.info('Guild settings has been loaded');
+    this.logger.info('Client has been loaded');
   }
 
   public async start(): Promise<string> {
