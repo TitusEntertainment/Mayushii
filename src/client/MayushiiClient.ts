@@ -1,9 +1,11 @@
-import { AkairoClient, CommandHandler, ListenerHandler } from 'discord-akairo';
+import { AkairoClient, CommandHandler, ListenerHandler, SQLiteProvider } from 'discord-akairo';
 import { join } from 'path';
-import { Message, MessageEmbed, Channel, ShardingManager } from 'discord.js';
-import { Connection, createConnection } from 'typeorm';
+import { Message } from 'discord.js';
+import { Connection, createConnection, Db } from 'typeorm';
 import { getMongoRepository, getMongoManager } from 'typeorm';
-import { GuildModel } from '../db/models/Guild.Model';
+import sqlite from 'sqlite';
+import { Setting } from '../db/models/Settings';
+import TypeORMProvider from '../db/SettingsProvider';
 
 declare module 'discord-akairo' {
   interface AkairoClient {
@@ -13,6 +15,7 @@ declare module 'discord-akairo' {
     api_url: string;
     color: string;
     db: Connection;
+    settings: TypeORMProvider;
   }
 }
 
@@ -22,17 +25,12 @@ interface MayushiiOptions {
 }
 
 export default class MayushiiClient extends AkairoClient {
-  public db: Connection;
-
-  public manager = getMongoManager();
+  public db!: Connection;
+  public settings!: TypeORMProvider;
 
   public commandHandler = new CommandHandler(this, {
     directory: join(__dirname, '..', 'commands'),
-    prefix: async (message: Message): Promise<string> => {
-      const data = await this.manager.findOne(GuildModel, { guildId: message.guild.id });
-      if (!data) return '!';
-      return data.prefix;
-    },
+    prefix: (message: Message): string => this.settings.get(message.guild!, 'prefix', '!'),
     aliasReplacement: /-/g,
     allowMention: true,
     handleEdits: true,
@@ -83,6 +81,22 @@ export default class MayushiiClient extends AkairoClient {
     console.log('Command handler loaded');
     this.listenerHandler.loadAll();
     console.log('Listener handler loaded');
+    const isProd = process.env.NODE_ENV === 'production';
+    this.db = await createConnection({
+      type: 'postgres',
+      database: 'Mayushii',
+      host: 'localhost',
+      port: 5432,
+      name: 'Mayushii',
+      synchronize: !isProd,
+      logging: !isProd,
+      entities: [Setting],
+    });
+    console.log('Connected to db');
+    // @ts-ignore
+    this.settings = new TypeORMProvider(this.db.getRepository(Setting));
+    await this.settings.init();
+    console.log('Inited guild settings');
   }
 
   public async start(): Promise<string> {
