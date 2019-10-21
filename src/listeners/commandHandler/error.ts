@@ -1,6 +1,8 @@
 import { Listener, Command } from 'discord-akairo';
 import MayushiiClient from 'src/client/MayushiiClient';
 import { Message } from 'discord.js';
+import { Logger } from '@ayana/logger';
+const logger = Logger.get('Command Handler');
 
 export default class CommandError extends Listener {
   public client: MayushiiClient;
@@ -14,6 +16,6 @@ export default class CommandError extends Listener {
   }
 
   public exec(error: Error, message: Message, command: Command) {
-    this.client.logger.error(`Command: ${command} has errored. message: ${message}`, `${error}`);
+    logger.error(`Command: ${command} has errored. message: ${message}`, `${error}`);
   }
 }

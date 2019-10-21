@@ -1,8 +1,7 @@
 import { Command } from 'discord-akairo';
 import MayushiiClient from 'src/client/MayushiiClient';
 import { Message, MessageEmbed } from 'discord.js';
-import fetch from 'node-fetch';
-
+import { TitusClient } from '@titus_entertainment/api';
 export default class UnixPornCommand extends Command {
   client: MayushiiClient;
 
@@ -15,35 +14,19 @@ export default class UnixPornCommand extends Command {
   }
 
   public async exec(message: Message) {
-    const query = `
-    {
-      unixporn {
-          url
-          title
-          image
-        }
-    }
-    `;
+    const api: TitusClient = new TitusClient();
+    const data = await api.getUnixPorn();
 
-    const opts = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
-    };
+    if (!data.success) return;
 
-    fetch(this.client.api_url, opts)
-      .then(res => res.json())
-      .then(res => {
-        const embed: MessageEmbed = new MessageEmbed()
-          .setAuthor(
-            `${res.data.unixporn.title}`,
-            `https://i.imgur.com/rUmaedY.png`,
-            `https://reddit.com${res.data.unixporn.url}`
-          )
-          .setColor(this.client.color)
-          .setURL(`https://reddit.com${res.data.unixporn.url}`)
-          .setImage(res.data.unixporn.image);
-        return message.util!.send(embed);
-      });
+    const post = data.data.unixporn;
+
+    const postEmbed: MessageEmbed = new MessageEmbed()
+      .setColor(this.client.color)
+      .setTitle(post.title)
+      .setURL(`https://reddit.com${post.url}`)
+      .setImage(post.image);
+
+    return message.util!.send(postEmbed);
   }
 }

@@ -1,8 +1,7 @@
-import 'reflect-metadata';
 import MayushiiClient from './client/MayushiiClient';
-require('dotenv').config();
-import 'reflect-metadata';
+import dotenv from 'dotenv';
 
-const client = new MayushiiClient({ owner: process.env.OWNER, token: process.env.TOKEN });
+dotenv.config();
+
+const client = new MayushiiClient({ owner: process.env.OWNER, token: process.env.TOKEN, uri: process.env.MONGO_URI });
 client.start();
-// Hello word

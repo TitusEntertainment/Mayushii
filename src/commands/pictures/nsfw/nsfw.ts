@@ -1,8 +1,7 @@
 import { Command } from 'discord-akairo';
 import { Message, MessageEmbed } from 'discord.js';
 import MayushiiClient from 'src/client/MayushiiClient';
-import fetch from 'node-fetch';
-
+import { TitusClient } from '@titus_entertainment/api';
 export default class NsfwCommand extends Command {
   public client: MayushiiClient;
   public constructor() {
@@ -16,31 +15,19 @@ export default class NsfwCommand extends Command {
     //@ts-ignore
     if (!message.channel.nsfw) return message.util!.reply('You cannot use this command in a non nsfw channel!');
 
-    const query = `
-          {
-            nsfw {
-                url
-                title
-                image
-              }
-          }
-    `;
+    const api: TitusClient = new TitusClient();
+    const data = await api.getNsfw();
 
-    const opts = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
-    };
+    if (!data.success) return;
 
-    fetch(this.client.api_url, opts)
-      .then(res => res.json())
-      .then(res => {
-        const embed: MessageEmbed = new MessageEmbed()
-          .setTitle(res.data.nsfw.title)
-          .setColor(this.client.color)
-          .setURL(`https://reddit.com${res.data.nsfw.url}`)
-          .setImage(res.data.nsfw.image);
-        return message.util!.send(embed);
-      });
+    const post = data.data.nsfw;
+
+    const postEmbed: MessageEmbed = new MessageEmbed()
+      .setColor(this.client.color)
+      .setTitle(post.title)
+      .setURL(`https://reddit.com${post.url}`)
+      .setImage(post.image);
+
+    return message.util!.send(postEmbed);
   }
 }

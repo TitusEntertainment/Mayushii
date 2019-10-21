@@ -2,6 +2,7 @@ import { Command } from 'discord-akairo';
 import MayushiiClient from 'src/client/MayushiiClient';
 import { Message, MessageEmbed } from 'discord.js';
 import fetch from 'node-fetch';
+import { TitusClient } from '@titus_entertainment/api';
 
 export default class MemeCommand extends Command {
   client: MayushiiClient;
@@ -15,35 +16,19 @@ export default class MemeCommand extends Command {
   }
 
   public async exec(message: Message) {
-    const query = `
-    {
-      meme {
-          url
-          title
-          image
-        }
-    }
-    `;
+    const api: TitusClient = new TitusClient();
+    const data = await api.getMeme();
 
-    const opts = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query }),
-    };
+    if (!data.success) return;
 
-    fetch(this.client.api_url, opts)
-      .then(res => res.json())
-      .then(res => {
-        const embed: MessageEmbed = new MessageEmbed()
-          .setAuthor(
-            `${res.data.meme.title}`,
-            'https://a.thumbs.redditmedia.com/JkyImC_zyl4XzE_yW-G4KOUTTFB6MRHUR3eEHvrpq64.png',
-            `https://reddit.com${res.data.meme.url}`
-          )
-          .setColor(this.client.color)
-          .setURL(`https://reddit.com${res.data.meme.url}`)
-          .setImage(res.data.meme.image);
-        return message.util!.send(embed);
-      });
+    const meme = data.data.meme;
+
+    const memeEmbed: MessageEmbed = new MessageEmbed()
+      .setColor(this.client.color)
+      .setTitle(meme.title)
+      .setURL(`https://reddit.com${meme.url}`)
+      .setImage(meme.image);
+
+    return message.util!.send(memeEmbed);
   }
 }

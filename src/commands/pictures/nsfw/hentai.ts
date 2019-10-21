@@ -15,16 +15,20 @@ export default class HentaiCommand extends Command {
 
   public async exec(message: Message) {
     //@ts-ignore
-    if (!message.channel.nsfw)
-      return message.util!.reply('This command is only avalible in **NSFW** channels');
-    const fetch = await this.api.getHentai();
-    const data = fetch.data.hentai;
-    const embed: MessageEmbed = new MessageEmbed()
-      .setTitle(data.title)
-      .setColor(this.client.color)
-      .setImage(data.image)
-      .setFooter(`Cached from: https://reddit.com/${data.url}`);
+    if (!message.channel.nsfw) return message.util!.reply('This command is only avalible in **NSFW** channels');
+    const api: TitusClient = new TitusClient();
+    const data = await api.getHentai();
 
-    return message.util!.send(embed);
+    if (!data.success) return;
+
+    const post = data.data.hentai;
+
+    const postEmbed: MessageEmbed = new MessageEmbed()
+      .setColor(this.client.color)
+      .setTitle(post.title)
+      .setURL(`https://reddit.com${post.url}`)
+      .setImage(post.image);
+
+    return message.util!.send(postEmbed);
   }
 }
